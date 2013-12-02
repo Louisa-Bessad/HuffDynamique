@@ -2,6 +2,8 @@ package main;
 
 import java.io.File;
 
+import compression.Huffman;
+
 import tools.Tools;
 
 public class Main {
@@ -10,9 +12,13 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		File f = new File("Data/Textual Data/Bible/BDS/40010000");
-		String res = Tools.readFile(f);
-		System.out.println(res);
+		
+		Huffman c = new Huffman("aba");
+		c.compression();
+		System.out.println(c.getCode());
+		//System.out.println(c.getA() == null);
+		System.out.println("THE LAST ARBRE ====");
+		System.out.println(c.getA().toString());
 	}
 
 }
