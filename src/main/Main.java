@@ -21,6 +21,7 @@ public class Main {
 		//System.out.println(c.getA() == null);
 		System.out.println("THE LAST ARBRE ====");
 		System.out.println(c.getA().toString());
+		System.out.println(c.getA() == null);
 	}
 
 }

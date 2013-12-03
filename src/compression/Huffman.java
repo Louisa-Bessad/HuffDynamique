@@ -52,6 +52,7 @@ public class Huffman {
 			}
 			a = Modification(a,s);
 			i++;
+			System.out.println(a.toString());
 		}
 		
 		//System.out.println("in the end" + list.get(0).toString());
@@ -65,7 +66,7 @@ public class Huffman {
 		int index = inList(s);
 		Arbre q = null;
 		if(index == -1){
-			q = list.get(0);						// je suis le pere
+			q = list.get(this.inList('#'));						// je suis le pere
 			if(!q.hasPere()){						// ilya que #
 				Arbre newPere = new Arbre(' ',0);	// noeud avec 1
 				newPere.setFilsG(q);				// son filsG #
@@ -103,97 +104,45 @@ public class Huffman {
 
 	private Arbre traitement(Arbre a, Arbre q) {
 		boolean inc = this.isIncrementable(q);
-		System.out.println(inc);
+		System.out.println("incrementable ou pas = " + inc);
 		if(inc){
-			//System.out.println("q = " + q.toString());
-			//System.out.println("a = " + a.toString());
 			this.incrementePath(q,a);
 			return a;
 		}else{
-			//System.out.println(q.toString()); crashes here
 			Arbre m = this.getFirstIndexEqualWeight(q);
 			Arbre b = this.finBloc(a, m);
 			this.incrementePath(q, m);				//added poids from q till qm;
-
+			//ON FAIT L'ECHANGE
 			Arbre bG = b.getFilsG();
-			System.out.println("the gauche of b");
-			System.out.println(bG.toString());
+			int inBG = this.inList(bG.getValue());
 			Arbre bD = b.getFilsD();
-			System.out.println("the droit of b");
-			System.out.println(bD.toString());
-			
+			int inBD = this.inList(bD.getValue());
 			Arbre mG = m.getFilsG();
-			System.out.println("the gauche of m");
-			System.out.println(mG.toString());
+			int inMG = this.inList(mG.getValue());
 			Arbre mD = m.getFilsD();
-			System.out.println("the droit of m");
-			System.out.println(mD.toString());
-			
-			m.setFilsD(bD);
-			bD.setPere(m);
-			
-			m.setFilsG(bG);
-			bG.setPere(m);
-			
-			b.setFilsD(mD);
-			mD.setPere(b);
-			
-			b.setFilsG(mG);
-			mG.setPere(b);
-		
-			/*
-			Arbre pereb = b.getPere();
-			System.out.println(pereb == null);
-			Arbre perem = m.getPere();
-			System.out.println(perem == null);
-			
-			if(pereb == perem){
-				if(pereb.getFilsD() == b){
-					pereb.setFilsG(b);
-					b.setPere(pereb);
-					pereb.setFilsD(m);
-					m.setPere(pereb);
+			int inMD = this.inList(mD.getValue());
+			if(b == m.getPere()){
+				if(m == b.getFilsD()){
+					Arbre tmp = b.getFilsG();
+					b.setFilsG(m);
+					b.setFilsD(tmp);
+					int inG = this.inList(tmp.getValue());
+					int inD = this.inList(m.getValue());
+					list.set(inG, m);
+					list.set(inD, tmp);
 				}else{
-					pereb.setFilsD(b);
-					b.setPere(pereb);
-					pereb.setFilsG(m);
-					m.setPere(pereb);
+					System.out.println("here");
+					Arbre tmp = b.getFilsD();
+					b.setFilsD(m);
+					b.setFilsG(tmp);
 				}
 			}else{
-			
-				if(pereb.getFilsG() == b){
-					if(perem.getFilsG() == m){
-						pereb.setFilsG(m);
-						m.setPere(pereb);
-						//pereb.setFilsD(pereb.getFilsD());
-						perem.setFilsG(b);
-						b.setPere(perem);
-						//perem.setFilsD(perem.getFilsD());						
-					}else{
-						pereb.setFilsG(m);
-						m.setPere(pereb);
-						perem.setFilsD(b);
-						b.setPere(perem);
-					}
-				}else{
-					if(perem.getFilsG() == m){
-						System.out.println("do nothing");
-					}else{
-						System.out.println("do nothing 2");
-					}
-				}
+				System.out.println("rest du code");
+				
 			}
-			*/
-			int tmp1 = this.inList(b.getValue());
-			int tmp2 = this.inList(m.getValue());
-			
-			list.set(tmp1, m);
-			list.set(tmp2, b);
-			
-			
-			this.traitement(a, m.getPere()); 
+			System.out.println("a = " + a.toString());
+			return this.traitement(a, m.getPere()); 
 		}
-		return null;
 	}
 
 
@@ -205,7 +154,6 @@ public class Huffman {
 			start=start.getPere();
 			//System.out.println("loop");
 		}
-		System.out.println("ended this loop");
 		return start;
 	}
 
@@ -261,9 +209,13 @@ public boolean isIncrementable(Arbre a){
 		Arbre startp;
 		while(start.hasPere()){	
 			index = inList(start.getValue());
-			startp = list.get(index+1);
-			if(start.getFreq() > startp.getFreq())
+			//startp = list.get(index+1);
+			startp = start.getPere();
+			/*if(start.getFreq() > startp.getFreq())
+				return false;*/
+			if(start.getFreq()+1 > startp.getFilsD().getFreq() && start == startp.getFilsG()){
 				return false;
+			}
 			start= start.getPere();
 		}
 		return true;
@@ -272,13 +224,11 @@ public boolean isIncrementable(Arbre a){
 	
 public void incrementePath(Arbre s, Arbre e){
 	Arbre start = s;
-	System.out.println("e = " + s.getValue() + " , " + s.getFreq());
 	while(start != e){
 		start.setFreq(start.getFreq()+1);
 		start= start.getPere();
 	}
 	start.setFreq(start.getFreq()+1);
-	System.out.println(e.toString());
 }
 
 
