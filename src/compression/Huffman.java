@@ -75,7 +75,7 @@ public class Huffman {
 				newPere.setFilsD(letter);			// pere filsD noeud de char
 				a = newPere;						// arbre principal
 				q = newPere;
-				list.add(newPere);
+				list.add(newPere);         //Should swap
 				list.add(letter);
 			}else{
 				Arbre newPere = new Arbre(' ',1);	//new pere
@@ -86,7 +86,7 @@ public class Huffman {
 				q.setPere(newPere);					// pere pour #
 				Arbre letter = new Arbre(s,1);		// letter
 				letter.setPere(newPere);			// pere de letter
-				newPere.setFilsD(letter);			// 
+				newPere.setFilsD(letter);			// should swap as well
 				q = newPere;
 			}
 		}else{
