@@ -114,13 +114,9 @@ public class Huffman {
 			this.incrementePath(q, m);				//added poids from q till qm;
 			//ON FAIT L'ECHANGE
 			Arbre bG = b.getFilsG();
-			int inBG = this.inList(bG.getValue());
 			Arbre bD = b.getFilsD();
-			int inBD = this.inList(bD.getValue());
 			Arbre mG = m.getFilsG();
-			int inMG = this.inList(mG.getValue());
 			Arbre mD = m.getFilsD();
-			int inMD = this.inList(mD.getValue());
 			if(b == m.getPere()){
 				if(m == b.getFilsD()){
 					Arbre tmp = b.getFilsG();
@@ -133,12 +129,17 @@ public class Huffman {
 				}else{
 					System.out.println("here");
 					Arbre tmp = b.getFilsD();
+					int inD = this.inList(b.getValue());
+					int inG = this.inList(m.getValue());
 					b.setFilsD(m);
 					b.setFilsG(tmp);
+					list.set(inG, tmp);
+					list.set(inD, m);
 				}
 			}else{
 				System.out.println("rest du code");
-				
+				System.out.println("b = " + b.toString());
+				System.out.println("m = " + m.toString());
 			}
 			System.out.println("a = " + a.toString());
 			return this.traitement(a, m.getPere()); 

@@ -82,7 +82,7 @@ public class Arbre {
 		String res = "";
 		res+= "["+value+","+freq+"]";
 		if(isFeuille()){
-			return res;
+			return "F"+res;
 		}else{
 			res+= this.filsG.toString() + "," + this.filsD.toString();
 			return res;
