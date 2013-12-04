@@ -34,7 +34,7 @@ public class Huffman {
 
 
 	public void compression(){
-		System.out.println("CALLING WITH TEXT = " + text);
+		//System.out.println("CALLING WITH TEXT = " + text);
 		a = new Arbre('#',0);			//create start
 		list.add(a);					//add to list
 		int i = 0;							
@@ -42,7 +42,7 @@ public class Huffman {
 			//System.out.println("i = " + i);
 			//System.out.println("CODE IS " + code);
 			char s = text.charAt(i);  //getchar
-			System.out.println(s);
+			//System.out.println(s);
 			int index = inList(s);	// exisits ou pas
 			//System.out.println("INDEX = " + index);
 			if( index == -1){
@@ -52,6 +52,7 @@ public class Huffman {
 			}
 			a = Modification(a,s);
 			i++;
+			System.out.println("Char = " + s);
 			System.out.println(a.toString());
 		}
 		
@@ -104,7 +105,7 @@ public class Huffman {
 
 	private Arbre traitement(Arbre a, Arbre q) {
 		boolean inc = this.isIncrementable(q);
-		System.out.println("incrementable ou pas = " + inc);
+		//System.out.println("incrementable ou pas = " + inc);
 		if(inc){
 			this.incrementePath(q,a);
 			return a;
@@ -127,7 +128,7 @@ public class Huffman {
 					list.set(inG, m);
 					list.set(inD, tmp);
 				}else{
-					System.out.println("here");
+					//System.out.println("here");
 					Arbre tmp = b.getFilsD();
 					int inD = this.inList(b.getValue());
 					int inG = this.inList(m.getValue());
@@ -141,7 +142,7 @@ public class Huffman {
 				System.out.println("b = " + b.toString());
 				System.out.println("m = " + m.toString());
 			}
-			System.out.println("a = " + a.toString());
+			//System.out.println("a = " + a.toString());
 			return this.traitement(a, m.getPere()); 
 		}
 	}

@@ -14,7 +14,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		//Huffman c = new Huffman("abracadabra");
-		Huffman c = new Huffman("abracadabra");
+		Huffman c = new Huffman("abracad");
 		
 		c.compression();
 		System.out.println(c.getCode());
