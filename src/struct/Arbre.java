@@ -5,6 +5,7 @@ public class Arbre {
 	Arbre pere;
 	Arbre filsG;
 	Arbre filsD;
+	Arbre next;
 	char value;
 	int freq;
 	
@@ -30,7 +31,6 @@ public class Arbre {
 	public boolean isFeuille(){
 		return (this.filsD == null && this.filsG == null);
 	}
-	
 	
 	//GETTERS AND SETTERS.
 
@@ -78,6 +78,19 @@ public class Arbre {
 		return !(pere==null);
 	}
 	
+	public boolean hasNext(){
+		return !(next==null);
+	}
+	
+	
+	public Arbre getNext() {
+		return next;
+	}
+
+	public void setNext(Arbre next) {
+		this.next = next;
+	}
+
 	public String toString(){
 		String res = "";
 		res+= "["+value+","+freq+"]";
