@@ -13,8 +13,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
-		//Huffman c = new Huffman("abracadabra");
-		Huffman c = new Huffman("abr");
+		Huffman c = new Huffman("abracad");
+		//Huffman c = new Huffman("abr");
 		
 		c.compression();
 		System.out.println(c.getCode());
