@@ -9,6 +9,8 @@ public class Arbre {
 	char value;
 	int freq;
 	
+	int pos;
+	
 	
 	
 	public Arbre(char value,int freq){
@@ -101,4 +103,20 @@ public class Arbre {
 			return res;
 		}
 	}
+
+	public String toStringNode(){
+		String res = "";
+		res+= "["+value+","+freq+"]";
+		return res;
+	}
+	
+	public int getPos() {
+		return pos;
+	}
+
+	public void setPos(int pos) {
+		this.pos = pos;
+	}
+	
+	
 }

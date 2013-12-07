@@ -6,17 +6,21 @@ import java.util.ArrayList;
 
 
 
+import java.util.HashMap;
+import java.util.Set;
+
 import struct.Arbre;
 
 public class Huffman {
 	
 	String code = "";
-	ArrayList<Arbre> list = new ArrayList<Arbre>();
+	HashMap<String,Arbre> hash = new HashMap<String,Arbre>();
+	ArrayList<Arbre> seq = new ArrayList<Arbre>();
+	
+	
 	String text;
-	Arbre a;
-	
-	Arbre windows;
-	
+	Arbre racine;
+
 	public Huffman(String text){
 		this.text = text;
 	}
@@ -36,25 +40,25 @@ public class Huffman {
 
 
 	public void compression(){
-		//System.out.println("CALLING WITH TEXT = " + text);
-		a = new Arbre('#',0);			//create start
-		windows = a ;
-		list.add(a);					//add to list
+		racine = new Arbre('#',0);			//create start
+		racine.setPos(0);
+		seq.add(racine);					//add to list
 		int i = 0;							
 		while(i < text.length()){		//parcour
 			char s = text.charAt(i);  //getchar
-			int index = inList(s);	// exisits ou pas
-			if( index == -1){
+			
+			if(hash.containsKey(s))
 				code = code+getCode(0)+s+" ";	//return code de zero + s
-			}else{
-				code = code+getCode(index)+" ";	//return code de s;
-			}
+			else
+				code = code+getCode()+" ";	//return code de s; // check what to o
+			
 			System.out.println("char = " + s);
 			System.out.println("==========================================================");
-			a = Modification(a,s);
+			racine = Modification(racine,s);
 			i++;
-			System.out.println("Char = " + s);
-			System.out.println(a.toString());
+			//System.out.println("Char = " + s);
+			System.out.println("before next etapes");
+			System.out.println(racine.toString());
 		}
 	}
 	
@@ -63,74 +67,43 @@ public class Huffman {
 	
 	
 	private Arbre Modification(Arbre a, char s) {
-		System.out.println("modification has been called");
-		System.out.println("==========================================================");
-		int index = inList(s);
+		//System.out.println("modification has been called");
+		//System.out.println("==========================================================");
 		Arbre q = null;
-		if(index == -1){
-			//System.out.println("doesnt exisit " + s);
-			q = windows.getPere();								// je suis le pere
-			if(q == null){							// ilya que #
-				//System.out.println("# has no pere");
-				Arbre letter = new Arbre(s,1);		// le noeud avec char
-				Arbre newPere = new Arbre(' ',0);	// noeud avec 1
-	
-				newPere.setFilsG(windows);				// son filsG #
-				newPere.setFilsD(letter);			// pere filsD noeud de char
-				
-				windows.setPere(newPere);					// # son new pere
-				windows.setNext(letter); 					// setting next
-				
-				letter.setPere(newPere);			// son pere
-				letter.setNext(newPere);
-				
-				a = newPere;						// arbre principal
-				q = newPere;
-				
-				//System.out.println("after just finished the inseration");
-				//System.out.println("a  = " + a.toString());
-				
-				list.add(letter);
-				list.add(newPere);
+		if(!hash.containsKey(String.valueOf(s))){
+			if(seq.size() >= 2){
+				q = seq.get(2);
+			}
+			Arbre letter = new Arbre(s,1);	
+			Arbre newPere = new Arbre(' ',1);	
+			newPere.setFilsD(letter);			
+			letter.setPere(newPere);			// son pere
+			seq.add(1, letter);
+			letter.setPos(1);
+			seq.add(2,newPere);
+			newPere.setPos(2);
+			hash.put(String.valueOf(s), letter);
+			this.addToList2(2);
+		
+			newPere.setFilsG(seq.get(0));		
+			seq.get(0).setPere(newPere);			
 			
 			
+			if(q == null){	
+				newPere.setFreq(0);
+				racine = newPere;						// arbre principal
+				a = newPere;
+				q = newPere;			
 			}else{
-				//System.out.println("q has a pere");
-				Arbre newPere = new Arbre(' ',1);	//new pere
-				newPere.setFilsG(windows);							//son fils #		
-				newPere.setPere(q);					//son pere et le pere de #
-				q.setFilsG(newPere);				//change pour le pere 		
-				windows.setPere(newPere);					// pere pour #
-				
-				Arbre letter = new Arbre(s,1);		// letter
-				letter.setPere(newPere);			// pere de letter
-				letter.setNext(newPere);
-				newPere.setFilsD(letter);			// should swap as well
-				
-				windows.setNext(letter); 
-				//q = newPere;
-				
-				//System.out.println("q has a droit " + q.getFilsD());
-				newPere.setNext(q.getFilsD());
-				//System.out.println(newPere.getNext());
-				
-				//System.out.println("a = " + a.toString());
-				//System.out.println("q = " + q.toString());
-				
-				list.add(letter);
-				list.add(newPere);
-			
+				newPere.setPere(q);
+				q.setFilsG(newPere);
 			}
 		}else{
-			//System.out.println("i am here 2");
-			q = list.get(index);			
-			if(q.getPere().getFilsG().getValue()=='#' && q.getPere() == finBloc(q)){ //IF NORMAL 
-				q = q.getPere();													// DE SUJET
+				System.out.println("i still didnt know");
 			}
-		}
-		//System.out.println("q = " + q.hasNext());
-		System.out.println("fin de modification");
-		System.out.println("==========================================================");
+		System.out.println("before traitement");
+		System.out.println("racine = " + racine);
+		System.out.println("q      = " + q);
 		return traitement(a,q);
 	}
 
@@ -143,104 +116,89 @@ public class Huffman {
 			this.incrementePath(q,a);
 			return a;
 		}else{
+
 			Arbre m = this.firstIndex(q);
 			Arbre b = this.finBloc(m);
+			
+			System.out.println("m =  " + m.toString());
+			System.out.println("b =  " + b.toString());
+		
+			//return a;
 			this.incrementePath(q, m);				//added poids from q till qm;
 			//ON FAIT L'ECHANGE
-			if(b == m.getPere()){
-				if(m == b.getFilsD()){
-					Arbre tmp = b.getFilsG();
-					b.setFilsG(m);
-					b.setFilsD(tmp);
-					int inG = this.inList(tmp.getValue());
-					int inD = this.inList(m.getValue());
-					list.set(inG, m);
-					list.set(inD, tmp);
+			if(m.getPere() == b.getPere() && m.getPere() !=null){
+				int indexM = m.getPos();
+				
+				if(m.getPere().getFilsG() == m){
+					Arbre pere = m.getPere();
+					pere.setFilsD(m);
+					pere.setFilsG(b);					
+					seq.set(b.getPos(), m);
+					m.setPos(b.getPos());
+					seq.set(indexM, b);
+					b.setPos(indexM);	
 				}else{
-					//System.out.println("here");
-					Arbre tmp = b.getFilsD();
-					int inD = this.inList(b.getValue());
-					int inG = this.inList(m.getValue());
-					b.setFilsD(m);
-					b.setFilsG(tmp);
-					list.set(inG, tmp);
-					list.set(inD, m);
+					Arbre pere = m.getPere();
+					pere.setFilsG(m);
+					pere.setFilsD(b);
+					seq.set(b.getPos(), m);
+					m.setPos(b.getPos());
+					seq.set(indexM, b);
+					b.setPos(indexM);
+					
 				}
 			}else{
-				System.out.println("rest du code");
-	
-				
-				Arbre tmp = b.getPere();
-				Arbre tmp2 = m.getPere();
-				
-				System.out.println(b);
-				System.out.println(m);
-				
-				b.setPere(tmp2);
-				m.setPere(tmp);
-				
-				tmp2.setFilsG(b);
-				tmp.setFilsD(m);
-				
-				b.setNext(tmp2.getFilsD());
-				m.setNext(tmp);
-				System.out.println("after the swap");
-				System.out.println(a.toString());
-				
-			}
-			//System.out.println("a = " + a.toString());
+				System.out.println("prout");
+				return a;
+			} 
 			return this.traitement(a, m.getPere()); 
-		}
+		} 
 	}
 
-
-	public Arbre firstIndex(Arbre e){
+ /*public Arbre firstIndex(Arbre e){
 		Arbre start = e;
-		while(start.hasNext() && start.getFreq() != start.getNext().getFreq()){
-			if(start.hasPere()){
-				System.out.println("grandfather exisits first index");
-				if(start.getPere().getFilsG() != start.getPere() && start.getPere() != a ){
-					System.out.println("mon pere est droit");
-					System.out.println(start.getFreq()+1);
-					if(start.getPere().getFilsG().getFreq() < start.getFreq()+1){
-						System.out.println("inside the loop");
-						System.out.println(start);
-						System.out.println(start.getPere().getFilsG().getValue());
-						System.out.println("i come out");
-						return start;
-					}
-				}
+		while(start.hasPere()){
+			if(start.getFreq() == start.getPere().getFreq()){
+				return start;
 			}
-			start = start.getNext();
+			start = start.getPere();
 		}
-			
 		return start;
 	}
-
-	private Arbre finBloc(Arbre q) {
-		while(q.hasNext() && q.getFreq()==q.getNext().getFreq()){
-			q = q.getNext();
-			if(q.hasPere()){
-				System.out.println("fuck");
-				if(q.getPere().getFilsG() != q.getPere() && q.getPere() != a ){
-					System.out.println("this");
-					System.out.println(q.getFreq()+1);
-					if(q.getPere().getFilsG().getFreq() < q.getFreq()+1){
-						System.out.println("bloody");
-						System.out.println(q);
-						System.out.println(q.getPere().getFilsG().getValue());
-						System.out.println("shit");
-						return q;
-					}
-				}
+*/
+	
+	private Arbre firstIndex(Arbre e){
+		int index = e.getPos();
+		System.out.println("inside firstIndex");
+		System.out.println(seq.get(index));
+		System.out.println(e);
+		while(index < seq.size() - 1){
+			if(seq.get(index).getFreq() == seq.get(index+1).getFreq()){
+				return seq.get(index);
 			}
+			index++;
 		}
-		return q;
+		return seq.get(index);
+	}
+	
+	private Arbre finBloc(Arbre q) {
+		System.out.println("inside finBloc");
+		int index = q.getPos();
+		System.out.println(seq.get(index).toStringNode());
+		System.out.println(seq.size());
+		while(index < seq.size() - 1){
+			System.out.println(seq.get(index).toStringNode());
+			System.out.println(seq.get(index+1).toStringNode());
+			if(seq.get(index).getFreq() < seq.get(index+1).getFreq())
+				return seq.get(index);
+			index++;
+		}
+		return seq.get(index);		//still to check what to return.
 	}
 
 	private String getCode(int i) {
 		String res = "";
-		Arbre tmp = list.get(i);
+		Arbre tmp = seq.get(i);
 		while(tmp.hasPere()){
 			Arbre pere = tmp.getPere();
 			if(pere.getFilsG() == tmp){
@@ -253,48 +211,17 @@ public class Huffman {
 		return res;
 	}
 
-
-
-
-
-	//returns index;
-	public int inList(char s){
-		for(int i = 0 ; i < list.size() ; i++){
-			if(list.get(i).getValue() == s){
-				return i;
-			}
-		}
-		return -1;
-	}
-	
 	public Arbre getA(){
-		return a;
+		return racine;
 	}
 	
 //checked
 public boolean isIncrementable(Arbre arb){
-		Arbre start = arb;
-		System.out.println(start.toString() + " has a next " + start.getNext());
-		while(start.hasNext()){
-			if(start.getFreq() +1 > start.getNext().getFreq() ){
-				System.out.println("je sors d'ici");
+		int startIndex = arb.getPos()-2;
+		while(startIndex < seq.size()-1){
+			if(seq.get(startIndex).getFreq() +1  > seq.get(startIndex + 1).getFreq())
 				return false;
-			}
-			if(start.hasPere()){
-				System.out.println("grandfather exisits");
-				if(start.getPere().getFilsG() != start.getPere() && start.getPere() != a ){
-					System.out.println("mon pere est droit");
-					System.out.println(start.getFreq()+1);
-					if(start.getPere().getFilsG().getFreq() < start.getFreq()+1){
-						System.out.println("inside the loop");
-						System.out.println(start);
-						System.out.println(start.getPere().getFilsG().getValue());
-						System.out.println("i come out");
-						return false;
-					}
-				}
-			}
-			start= start.getNext();
+			startIndex++;
 		}
 		return true;
 	}
@@ -309,5 +236,13 @@ public void incrementePath(Arbre s, Arbre e){
 	start.setFreq(start.getFreq()+1);
 }
 
+
+
+
+private void addToList2(int x){
+	for(int i = 3 ; i < seq.size() ; i++){
+		seq.get(i).setPos(seq.get(i).getPos()+x);
+	}
+}
 
 }
