@@ -15,14 +15,14 @@ public class Main {
 		
 		
 		//abracadabra
-		Huffman c = new Huffman("abracada");
+		Huffman c = new Huffman("abracadabra");
 		//Huffman c = new Huffman("abr");
 		
 		c.compression();
 		System.out.println(c.getCode());
 		//System.out.println(c.getA() == null);
 		System.out.println("THE LAST ARBRE ====");
-		System.out.println(c.getA().toString());
+		System.out.println(c.getA().toStringComplete());
 		System.out.println(c.getA() == null);
 	}
 

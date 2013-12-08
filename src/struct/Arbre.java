@@ -38,6 +38,11 @@ public class Arbre {
 		}
 	}
 	
+	
+	public boolean amG(){
+		return pere.getFilsG()==this;
+	}
+	
 	public boolean isFeuille(){
 		return (this.filsD == null && this.filsG == null);
 	}
@@ -101,18 +106,18 @@ public class Arbre {
 		this.next = next;
 	}
 
-	public String toString(){
+	public String toStringComplete(){
 		String res = "";
 		res+= "["+value+","+freq+"]";
 		if(isFeuille()){
 			return "F"+res;
 		}else{
-			res+= this.filsG.toString() + "," + this.filsD.toString();
+			res+= this.filsG.toStringComplete() + "," + this.filsD.toStringComplete();
 			return res;
 		}
 	}
 
-	public String toStringNode(){
+	public String toString(){
 		String res = "";
 		res+= "["+value+","+freq+"]";
 		return res;

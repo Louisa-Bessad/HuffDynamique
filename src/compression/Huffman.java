@@ -47,18 +47,19 @@ public class Huffman {
 		while(i < text.length()){		//parcour
 			char s = text.charAt(i);  //getchar
 			
-			if(hash.containsKey(s))
-				code = code+getCode(0)+s+" ";	//return code de zero + s
-			else
-				code = code+getCode()+" ";	//return code de s; // check what to o
-			
+			if(!hash.containsKey(String.valueOf(s))){
+				code = code+getCode(0)+s+"";	//return code de zero + s
+			}else{
+				code = code+getCode(hash.get(String.valueOf(s)).getPos())+"";	//return code de s; // check what to o
+			}
 			System.out.println("char = " + s);
 			System.out.println("==========================================================");
 			racine = Modification(racine,s);
 			i++;
 			//System.out.println("Char = " + s);
 			System.out.println("before next etapes");
-			System.out.println(racine.toString());
+			System.out.println("ARBRE PRINCINPAL =======  " + racine.toStringComplete());
+			System.out.println(seq.toString());
 		}
 	}
 	
@@ -106,6 +107,7 @@ public class Huffman {
 		System.out.println("before traitement");
 		System.out.println("racine = " + racine);
 		System.out.println("q      = " + q);
+		System.out.println("first appel");
 		return traitement(a,q);
 	}
 
@@ -126,13 +128,14 @@ public class Huffman {
 			System.out.println("b =  " + b.toString());
 		
 			if((m == b) && (racine ==b)){
-				System.out.println("racine");
-				this.incrementePath(q, m);
-				return a;
+					this.incrementePath(q, m);
+					return a;
 			}
 			this.incrementePath(q, m);
 			//ON FAIT L'ECHANGE
 			if(m.getPere() == b.getPere() && m.getPere() !=null){
+				System.out.println("same pere");
+				System.out.println(m.getPere().toString());
 				int indexM = m.getPos();
 				
 				if(m.getPere().getFilsG() == m){
@@ -182,21 +185,14 @@ public class Huffman {
 				seq.set(indexB, m);
 				seq.set(indexM, b);
 			} 
+			System.out.println("after traitement = " + racine.toStringComplete());
+			System.out.println("am sending next  = " + m.getPere().toString());
+			System.out.println("==================================");
+
 			return this.traitement(a, m.getPere()); 
 		} 
 	}
 
- /*public Arbre firstIndex(Arbre e){
-		Arbre start = e;
-		while(start.hasPere()){
-			if(start.getFreq() == start.getPere().getFreq()){
-				return start;
-			}
-			start = start.getPere();
-		}
-		return start;
-	}
-*/
 	
 	private Arbre firstIndex(Arbre e){
 		int index = e.getPos();
@@ -240,10 +236,17 @@ public class Huffman {
 	
 //checked
 public boolean isIncrementable(Arbre arb){
-		int startIndex = arb.getPos()-2;
+		System.out.println("inside is incrementable");
+		System.out.println("has been called with arb = " + arb.toStringComplete());
+		if(arb == racine)
+			return true;
+		int startIndex = arb.getPos();
 		while(startIndex < seq.size()-1){
-			if(seq.get(startIndex).getFreq() +1  > seq.get(startIndex + 1).getFreq())
-				return false;
+			if(seq.get(startIndex).getFreq() +1 > seq.get(startIndex + 1).getFreq() && seq.get(startIndex-1).getPere() == seq.get(startIndex)){
+					System.out.println(seq.get(startIndex).toString());
+					System.out.println(seq.get(startIndex+1).toString());
+					return false;
+				}				
 			startIndex++;
 		}
 		return true;
