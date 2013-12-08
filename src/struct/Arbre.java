@@ -30,6 +30,14 @@ public class Arbre {
 	}
 	
 	
+	public Arbre getBrother(){
+		if(pere.getFilsD() == this){
+			return pere.getFilsG();
+		}else{
+			return pere.getFilsD();
+		}
+	}
+	
 	public boolean isFeuille(){
 		return (this.filsD == null && this.filsG == null);
 	}
@@ -117,6 +125,8 @@ public class Arbre {
 	public void setPos(int pos) {
 		this.pos = pos;
 	}
+	
+	
 	
 	
 }

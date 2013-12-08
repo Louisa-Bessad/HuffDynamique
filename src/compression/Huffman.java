@@ -99,8 +99,10 @@ public class Huffman {
 				q.setFilsG(newPere);
 			}
 		}else{
-				System.out.println("i still didnt know");
-			}
+			q = hash.get(String.valueOf(s));
+			if(q.getBrother() == seq.get(0) && q.getPere() == this.finBloc(q))
+				q = q.getPere();
+		}
 		System.out.println("before traitement");
 		System.out.println("racine = " + racine);
 		System.out.println("q      = " + q);
@@ -123,8 +125,12 @@ public class Huffman {
 			System.out.println("m =  " + m.toString());
 			System.out.println("b =  " + b.toString());
 		
-			//return a;
-			this.incrementePath(q, m);				//added poids from q till qm;
+			if((m == b) && (racine ==b)){
+				System.out.println("racine");
+				this.incrementePath(q, m);
+				return a;
+			}
+			this.incrementePath(q, m);
 			//ON FAIT L'ECHANGE
 			if(m.getPere() == b.getPere() && m.getPere() !=null){
 				int indexM = m.getPos();
@@ -148,8 +154,33 @@ public class Huffman {
 					
 				}
 			}else{
-				System.out.println("prout");
-				return a;
+				System.out.println("case they dont have the same father");
+				
+				int indexM = m.getPos();
+				int indexB = b.getPos();
+				
+				Arbre pereM = m.getPere();
+				Arbre pereB = b.getPere();
+				
+				if(m.getPere().getFilsG() == m){			// m is the gauche of his father
+					pereM.setFilsG(b);
+				}else{
+					pereM.setFilsD(b);
+				}
+				if(b.getPere().getFilsG() == b){
+					pereB.setFilsG(m);
+				}else{
+					pereB.setFilsD(m);
+				}
+				
+				b.setPere(pereM);
+				m.setPere(pereB);
+				
+				b.setPos(indexM);
+				m.setPos(indexB);
+				
+				seq.set(indexB, m);
+				seq.set(indexM, b);
 			} 
 			return this.traitement(a, m.getPere()); 
 		} 
@@ -169,9 +200,6 @@ public class Huffman {
 	
 	private Arbre firstIndex(Arbre e){
 		int index = e.getPos();
-		System.out.println("inside firstIndex");
-		System.out.println(seq.get(index));
-		System.out.println(e);
 		while(index < seq.size() - 1){
 			if(seq.get(index).getFreq() == seq.get(index+1).getFreq()){
 				return seq.get(index);
@@ -182,13 +210,8 @@ public class Huffman {
 	}
 	
 	private Arbre finBloc(Arbre q) {
-		System.out.println("inside finBloc");
 		int index = q.getPos();
-		System.out.println(seq.get(index).toStringNode());
-		System.out.println(seq.size());
 		while(index < seq.size() - 1){
-			System.out.println(seq.get(index).toStringNode());
-			System.out.println(seq.get(index+1).toStringNode());
 			if(seq.get(index).getFreq() < seq.get(index+1).getFreq())
 				return seq.get(index);
 			index++;
