@@ -132,6 +132,18 @@ public class Arbre {
 	}
 	
 	
+	public boolean dansMonChemin(Arbre a){
+		Arbre start = this;
+		while(start.hasPere()){
+			if(start.getPere() == a){
+				return true;
+			}
+			start = start.getPere();
+		}
+		return false;
+	}
+	
+	
 	
 	
 }

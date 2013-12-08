@@ -47,13 +47,14 @@ public class Huffman {
 		while(i < text.length()){		//parcour
 			char s = text.charAt(i);  //getchar
 			
-			if(!hash.containsKey(String.valueOf(s))){
-				code = code+getCode(0)+s+"";	//return code de zero + s
-			}else{
-				code = code+getCode(hash.get(String.valueOf(s)).getPos())+"";	//return code de s; // check what to o
-			}
 			System.out.println("char = " + s);
 			System.out.println("==========================================================");
+			if(!hash.containsKey(String.valueOf(s))){
+				code = code+getCode(0)+s+" ";	//return code de zero + s
+			}else{
+				code = code+getCode(hash.get(String.valueOf(s)).getPos())+" ";	//return code de s; // check what to o
+			}
+			
 			racine = Modification(racine,s);
 			i++;
 			//System.out.println("Char = " + s);
@@ -218,15 +219,20 @@ public class Huffman {
 	private String getCode(int i) {
 		String res = "";
 		Arbre tmp = seq.get(i);
+		System.out.println("tmp = " + tmp.toString());
 		while(tmp.hasPere()){
 			Arbre pere = tmp.getPere();
+			/*System.out.println("pere = " + pere.toStringComplete());
+			System.out.println("tmp  = " + tmp.toString());
+			System.out.println("res = " + res);*/
 			if(pere.getFilsG() == tmp){
-				res+="0";
+				res="0"+res;
 			}else{
-				res+="1";
+				res="1"+res;
 			}
 			tmp = pere;
 		}
+		System.out.println("res at the end = " + res);
 		return res;
 	}
 
@@ -235,22 +241,44 @@ public class Huffman {
 	}
 	
 //checked
-public boolean isIncrementable(Arbre arb){
+/*public boolean isIncrementable(Arbre arb){
 		System.out.println("inside is incrementable");
 		System.out.println("has been called with arb = " + arb.toStringComplete());
 		if(arb == racine)
 			return true;
 		int startIndex = arb.getPos();
 		while(startIndex < seq.size()-1){
-			if(seq.get(startIndex).getFreq() +1 > seq.get(startIndex + 1).getFreq() && seq.get(startIndex-1).getPere() == seq.get(startIndex)){
-					System.out.println(seq.get(startIndex).toString());
-					System.out.println(seq.get(startIndex+1).toString());
+			System.out.println(seq.get(startIndex).toString());
+			System.out.println(seq.get(startIndex+1).toString());
+			System.out.println((seq.get(startIndex-1).getPere()));
+			System.out.println(seq.get(startIndex-1).getPere() == seq.get(startIndex));
+			if(seq.get(startIndex).getFreq() +1 > seq.get(startIndex + 1).getFreq() && (arb.dansMonChemin(seq.get(startIndex)) /*&& /*arb.dansMonChemin(seq.get(startIndex)) /*&& seq.get(startIndex-1).getPere() == seq.get(startIndex) ){
+					
 					return false;
 				}				
 			startIndex++;
 		}
 		return true;
+	} 
+	*/
+	
+public boolean isIncrementable(Arbre e){
+	Arbre start = e;
+	int index = 0;
+	Arbre startp = null;
+	while(start.hasPere()){
+		 index =start.getPos();
+		 startp = seq.get(index+1);
+		// System.out.println("Noeud start"+"["+start.getLetter()+";"+start.getWeight()+";"+start.getIndex()+"]");
+		// System.out.println("Noeud startp"+"["+startp.getLetter()+";"+startp.getWeight()+";"+startp.getIndex()+"]");
+		 if(start.getFreq() >= startp.getFreq())
+				return false;
+			
+			start= start.getPere();
+		}
+		return true;
 	}
+
 
 //checked
 public void incrementePath(Arbre s, Arbre e){
