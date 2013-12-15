@@ -123,6 +123,13 @@ public class Arbre {
 		return res;
 	}
 	
+	public String toStringgrande(){
+		String res = "";
+		if(!isFeuille())
+			res+= "["+value+","+freq+"]" + filsG.toString() + "," + filsD.toString();
+		return res;
+	}
+	
 	public int getPos() {
 		return pos;
 	}

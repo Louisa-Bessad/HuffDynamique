@@ -16,36 +16,49 @@ public class Main {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
+			
+		File f = new File("abra.txt");
+		Tools.nbDiff(f);
 		
 		
-
-		File f = new File("test2");
-		String s = Tools.readFile(f);
-		s = "abracadb";
-		Tools.nbDiff(s);
-		Tools.init();
-		Compression c = new Compression(s);
-		//Huffman c = new Huffman("abr");
+		System.out.println("Table initial : ");
+		System.out.println("===============");
+		Object[] listKey = Tools.table.keySet().toArray();
+		for(int i = 0 ; i < listKey.length ; i++){
+			System.out.println(listKey[i] + " , " + Tools.table.get(listKey[i]));
+		}
 		
-		c.compression();
-		System.out.println(c.getCode());
-		//System.out.println(c.getA() == null);
-		System.out.println("THE LAST ARBRE ====");
+		
+		Tools.init("compressed.txt");
+		Compression c = new Compression();
+		
+		System.out.println("Compression:");
+		System.out.println("============");
+		long start = System.currentTimeMillis();  
+		c.compression(f);
+		long elapsedTimeMillis = System.currentTimeMillis()-start;
+		float elapsedTimeSec = elapsedTimeMillis/1000F;
+		System.out.println("Temp pris pour compression : " + elapsedTimeSec);
 		Tools.end();
-		System.out.println(c.getCode());
-		System.out.println(c.getA().toStringComplete());
-		System.out.println(c.getA() == null);
 		
-		Decompression d = new Decompression(c.getCode());
-		System.out.println("decompression");
-		System.out.println("======================");
-		//d.decompression();
-		//System.out.println(d.getDecomp());
-		//System.out.println("asdasdasdasd");
-		d.test();
-		System.out.println(d.getDecomp());
+		File f2 = new File("compressed.txt");
 		
-		//Tools.print();
+		System.out.println("taille avant compression = " + f.length() + "kb");
+		System.out.println("taille apres compression = " + f2.length()+ "kb");
+		double x = (double)f.length() -  (double)f2.length();
+		double y = x / (double)f.length();
+		System.out.println("taux = " + (y*100) + "%");
+
+		Decompression d = new Decompression();
+		System.out.println("Decompression:");
+		System.out.println("==============");
+		
+		start = System.currentTimeMillis();
+		d.test3(f2);
+		elapsedTimeMillis = System.currentTimeMillis()-start;
+		elapsedTimeSec = elapsedTimeMillis/1000F;
+		System.out.println("Temp pris pour decompression : " + elapsedTimeSec);
+	
 	}
 
 }

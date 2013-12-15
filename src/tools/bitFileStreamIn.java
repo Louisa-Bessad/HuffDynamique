@@ -10,10 +10,11 @@ public class bitFileStreamIn {
     int bcount = 0;
     int fillcount = 0;
     boolean eof = false;
-    bitFileStreamIn(FileInputStream i) {
+    public String code = "";
+    public bitFileStreamIn(FileInputStream i) {
             in = i;
     }
-    boolean read() throws IOException {
+    public boolean read() throws IOException {
             
             if(bcount == 0) fillBuffer();
             if(eof) return false;

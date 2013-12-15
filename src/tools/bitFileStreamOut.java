@@ -7,16 +7,20 @@ public class bitFileStreamOut {
     FileOutputStream out;
     boolean bitBuffer[] = new boolean[8];
     int bufferCount = 0;
-    bitFileStreamOut(FileOutputStream a) {
+    public bitFileStreamOut(FileOutputStream a) {
             out = a;
     }
-    void write(boolean wbit) throws IOException {
+    public void write(boolean wbit) throws IOException {
             bitBuffer[bufferCount] = wbit;
             bufferCount++;
-            if(bufferCount == 8) 
-            	flushBuffer();
+            if(bufferCount == 8) flushBuffer();
+
     }
-    void flushBuffer() throws IOException {
+    
+    public void writer(byte[] b) throws IOException{
+    	out.write(b);
+    }
+    public void flushBuffer() throws IOException {
             byte tempval = 0;
             for (int i=7; i > 0; i--) {
                     if(bitBuffer[i] == true) {

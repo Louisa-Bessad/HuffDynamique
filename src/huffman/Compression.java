@@ -1,6 +1,12 @@
 package huffman;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 
 
@@ -9,6 +15,7 @@ import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.Stack;
 
 import struct.Arbre;
 import tools.Tools;
@@ -19,12 +26,11 @@ public class Compression {
 	HashMap<String,Arbre> hash = new HashMap<String,Arbre>();
 	ArrayList<Arbre> seq = new ArrayList<Arbre>();
 	
+	int nb = 1;
 	
-	String text;
 	Arbre racine;
 
-	public Compression(String text){
-		this.text = text;
+	public Compression(){
 	}
 	
 	
@@ -41,30 +47,26 @@ public class Compression {
 
 
 
-	public void compression() throws IOException{
+	public void compression(File f) throws IOException{
 		racine = new Arbre('#',0);			//create start
 		racine.setPos(0);
 		seq.add(racine);					//add to list
-		int i = 0;							
-		while(i < text.length()){		//parcour
-			char s = text.charAt(i);  //getchar
-			System.out.println("char = " + s);
-			System.out.println("==========================================================");
+		int i = 0;
+		int r;
+		  InputStream in = new FileInputStream(f);
+	      Reader reader = new InputStreamReader(in);
+	      Reader buffer = new BufferedReader(reader);
+	      while ((r = buffer.read()) != -1) {
+	    	  char s = (char) r;
 			if(!hash.containsKey(String.valueOf(s))){
-				System.out.println("code de # = " + getCode(0));
-				code +=getCode(0)+Tools.table.get(String.valueOf(s));
 				Tools.toFile(getCode(0)+Tools.table.get(String.valueOf(s)));	//return code de zero + s
+				code+=getCode(0)+Tools.table.get(String.valueOf(s));
 			}else{
-				code +=getCode(hash.get(String.valueOf(s)).getPos());
 				Tools.toFile(getCode(hash.get(String.valueOf(s)).getPos()));	//return code de s; // check what to o
+				code+=getCode(hash.get(String.valueOf(s)).getPos());
 			}
-			//System.out.println(code);
 			racine = Modification(racine,s);
 			i++;
-			//System.out.println("Char = " + s);
-			System.out.println("before next etapes");
-			//System.out.println("ARBRE PRINCINPAL =======  " + racine.toStringComplete());
-			System.out.println(seq.toString());
 		}
 	}
 	
@@ -73,15 +75,14 @@ public class Compression {
 	
 	
 	private Arbre Modification(Arbre a, char s) {
-		//System.out.println("modification has been called");
-		//System.out.println("==========================================================");
 		Arbre q = null;
 		if(!hash.containsKey(String.valueOf(s))){
 			if(seq.size() >= 2){
 				q = seq.get(2);
 			}
 			Arbre letter = new Arbre(s,1);	
-			Arbre newPere = new Arbre(' ',1);	
+			Arbre newPere = new Arbre(' ',1);
+			nb = nb +2;
 			newPere.setFilsD(letter);			
 			letter.setPere(newPere);			// son pere
 			seq.add(1, letter);
@@ -109,49 +110,44 @@ public class Compression {
 			if(q.getBrother() == seq.get(0) && q.getPere() == this.finBloc(q))
 				q = q.getPere();
 		}
-		System.out.println("before traitement");
-		System.out.println("racine = " + racine);
-		System.out.println("q      = " + q);
-		System.out.println("first appel");
 		return traitement(a,q);
 	}
 
 
 
-	private Arbre traitement(Arbre a, Arbre q) {
+	private Arbre traitement(Arbre a, Arbre q){
 		boolean inc = this.isIncrementable(q);
-		System.out.println("incrementable ou pas = " + inc);
 		if(inc){
 			this.incrementePath(q,a);
 			return a;
 		}else{
-
+			
 			Arbre m = this.firstIndex(q);
 			Arbre b = this.finBloc(m);
 			
-			System.out.println("m =  " + m.toString());
-			System.out.println("b =  " + b.toString());
-		
+
 			if((m == b) && (racine ==b)){
 					this.incrementePath(q, m);
 					return a;
 			}
 			this.incrementePath(q, m);
+
 			//ON FAIT L'ECHANGE
 			if(m.getPere() == b.getPere() && m.getPere() !=null){
-				System.out.println("same pere");
-				System.out.println(m.getPere().toString());
-				int indexM = m.getPos();
-				
+				int indexM = m.getPos();		
 				if(m.getPere().getFilsG() == m){
+
 					Arbre pere = m.getPere();
+
 					pere.setFilsD(m);
 					pere.setFilsG(b);					
 					seq.set(b.getPos(), m);
 					m.setPos(b.getPos());
 					seq.set(indexM, b);
 					b.setPos(indexM);	
+
 				}else{
+
 					Arbre pere = m.getPere();
 					pere.setFilsG(m);
 					pere.setFilsD(b);
@@ -161,9 +157,7 @@ public class Compression {
 					b.setPos(indexM);
 					
 				}
-			}else{
-				System.out.println("case they dont have the same father");
-				
+			}else{	
 				int indexM = m.getPos();
 				int indexB = b.getPos();
 				
@@ -189,15 +183,38 @@ public class Compression {
 				
 				seq.set(indexB, m);
 				seq.set(indexM, b);
+				
 			} 
-			//System.out.println("after traitement = " + racine.toStringComplete());
-			//System.out.println("am sending next  = " + m.getPere().toString());
-			//System.out.println("==================================");
-
 			return this.traitement(a, m.getPere()); 
 		} 
 	}
 
+	
+	private void parCour(){
+		ArrayList<Arbre> file = new ArrayList<Arbre>();
+		ArrayList<Arbre> seqTmp = new ArrayList<Arbre>();
+		file.add(racine);
+		int i = nb;
+		while(!file.isEmpty()){
+			Arbre tmp = file.remove(0);
+			seqTmp.add(0, tmp);
+			tmp.setPos(i);
+			
+			if(!tmp.isFeuille()){
+				file.add(tmp.getFilsD());
+				System.out.println("tmpD = " + tmp.getFilsD());
+				file.add(tmp.getFilsG());
+
+				System.out.println("tmpG = " + tmp.getFilsG());
+				System.out.println("========");
+			}
+			i--;
+		}
+		seq = seqTmp;
+		System.out.println("seq = " + seqTmp);
+		
+	}
+	
 	
 	private Arbre firstIndex(Arbre e){
 		int index = e.getPos();
@@ -223,12 +240,8 @@ public class Compression {
 	private String getCode(int i) {
 		String res = "";
 		Arbre tmp = seq.get(i);
-		System.out.println("tmp = " + tmp.toString());
 		while(tmp.hasPere()){
 			Arbre pere = tmp.getPere();
-			/*System.out.println("pere = " + pere.toStringComplete());
-			System.out.println("tmp  = " + tmp.toString());
-			System.out.println("res = " + res);*/
 			if(pere.getFilsG() == tmp){
 				res="0"+res;
 			}else{
@@ -236,35 +249,12 @@ public class Compression {
 			}
 			tmp = pere;
 		}
-		System.out.println("res at the end = " + res);
 		return res;
 	}
 
 	public Arbre getA(){
 		return racine;
 	}
-	
-//checked
-/*public boolean isIncrementable(Arbre arb){
-		System.out.println("inside is incrementable");
-		System.out.println("has been called with arb = " + arb.toStringComplete());
-		if(arb == racine)
-			return true;
-		int startIndex = arb.getPos();
-		while(startIndex < seq.size()-1){
-			System.out.println(seq.get(startIndex).toString());
-			System.out.println(seq.get(startIndex+1).toString());
-			System.out.println((seq.get(startIndex-1).getPere()));
-			System.out.println(seq.get(startIndex-1).getPere() == seq.get(startIndex));
-			if(seq.get(startIndex).getFreq() +1 > seq.get(startIndex + 1).getFreq() && (arb.dansMonChemin(seq.get(startIndex)) /*&& /*arb.dansMonChemin(seq.get(startIndex)) /*&& seq.get(startIndex-1).getPere() == seq.get(startIndex) ){
-					
-					return false;
-				}				
-			startIndex++;
-		}
-		return true;
-	} 
-	*/
 	
 public boolean isIncrementable(Arbre e){
 	Arbre start = e;
@@ -273,8 +263,6 @@ public boolean isIncrementable(Arbre e){
 	while(start.hasPere()){
 		 index =start.getPos();
 		 startp = seq.get(index+1);
-		// System.out.println("Noeud start"+"["+start.getLetter()+";"+start.getWeight()+";"+start.getIndex()+"]");
-		// System.out.println("Noeud startp"+"["+startp.getLetter()+";"+startp.getWeight()+";"+startp.getIndex()+"]");
 		 if(start.getFreq() >= startp.getFreq())
 				return false;
 			

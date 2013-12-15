@@ -17,6 +17,7 @@ public class Tools {
 
 	
 	
+	public static int nbchar = 0;
 	public static HashMap<String,String> table ;
 	
 	public static String readFile(File f){
@@ -101,17 +102,78 @@ public class Tools {
   }
   
   
-  private static byte[] convert(String s){
-	  byte[] bit = new byte[s.length()];
-	  for(int i = 0 ; i < s.length() ; i++){
-		  if(s.charAt(i)=='1')
-			  bit[i] = 1;
-		  else
-			  bit[i] = 0;
-	  }
-	  return bit;
-  }
+public static void nbDiff(File f) throws IOException{
+	  
+      
+	  
+	  HashMap<String,Integer> list = new HashMap<String,Integer>();
+	  
+	  
+	  ArrayList<String> listString = new ArrayList<String>();
+	  
+	  InputStream in = new FileInputStream(f);
+      Reader reader = new InputStreamReader(in);
+      @SuppressWarnings("resource")
+      Reader buffer = new BufferedReader(reader);
+	  
+ 	  int cpt = 0;
+ 	  int nb = 0;
+ 	  
+ 	  int r;
+      while ((r = buffer.read()) != -1) {
+          char ch = (char) r;
+          String tmp = String.valueOf(ch);
+		  if(!list.containsKey(tmp)){
+			  list.put(tmp, 1);
+			  listString.add(tmp);
+			  cpt++;
+		  }
+      }
+	  double log = Math.log(cpt)/Math.log(2);
 	
+	  java.util.Collections.sort(listString);
+	  
+	  
+	 if(log % 2 != 0){
+		 nb = ((int)log + 1);
+	 }else{
+		 nb = (int) log;
+	 }
+	 
+	
+	 String start = "";
+	 for(int i  = 0 ; i < nb ; i++){
+		 start+='0';
+	 }
+	 table = new HashMap<String,String>();
+	 if(cpt == 1){
+		table.put(listString.get(0),"0");
+		return;
+	 }
+	 for(int i = 0 ; i < listString.size() ; i++){
+
+		 table.put(listString.get(i), start);
+		 
+		 String input1 = "1";
+
+		// Use as radix 2 because it's binary    
+		int number0 = Integer.parseInt(start, 2);
+		int number1 = Integer.parseInt(input1, 2);
+
+		int sum = number0 + number1;
+		start = Integer.toBinaryString(sum);
+
+		if(start.length() < nb){
+			int diff = nb - start.length();
+			String tmp = "";
+			for(int j = 0 ; j < diff ; j++)
+				tmp+="0";
+			start = tmp + start;
+		}
+
+	 }
+  }
+ 	
   public static String printValue(byte[] te){
 	  String res = "";
 	  for(int i = 0 ; i < te.length ; i++){
@@ -122,22 +184,24 @@ public class Tools {
 	
   static FileOutputStream bos ;
   static bitFileStreamOut bit ;
-  static int nb = 0 ;
+  public static int nb = 0 ;
   
-  public static void init() throws FileNotFoundException{
+  public static void init(String file) throws FileNotFoundException{
 	
-	  bos = new FileOutputStream("kaka");
+	  bos = new FileOutputStream(file);
 	  bit = new bitFileStreamOut(bos);
   }
   
+  public static String code ="";
+  
   public static void toFile(String s) throws IOException{
-	 for(int i = 0 ; i < s.length() ; i++){
-		 nb++;
-		 if(s.charAt(i)=='1'){
+	  for(int i = 0 ; i < s.length() ; i++){
+		  code+= s.charAt(i);
+		  if(s.charAt(i)=='1')
 			 bit.write(true);
-		 }else{
+		 else
 			 bit.write(false);
-		 }
+		 nb++;
 	 }
   }
   public static void end(){
