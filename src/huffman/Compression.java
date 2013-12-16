@@ -59,6 +59,10 @@ public class Compression {
 	      while ((r = buffer.read()) != -1) {
 	    	  char s = (char) r;
 			if(!hash.containsKey(String.valueOf(s))){
+				if(s =='|'){
+					System.out.println("the idiot one");
+					System.out.println(Tools.table.get(String.valueOf(s)));
+				}
 				Tools.toFile(getCode(0)+Tools.table.get(String.valueOf(s)));	//return code de zero + s
 				code+=getCode(0)+Tools.table.get(String.valueOf(s));
 			}else{
@@ -67,7 +71,10 @@ public class Compression {
 			}
 			racine = Modification(racine,s);
 			i++;
-		}
+			/*if(i % 10000 == 0){*/
+				//System.out.println("i = " + i);
+			//}
+		} 
 	}
 	
 	
@@ -117,6 +124,7 @@ public class Compression {
 
 	private Arbre traitement(Arbre a, Arbre q){
 		boolean inc = this.isIncrementable(q);
+
 		if(inc){
 			this.incrementePath(q,a);
 			return a;
@@ -211,7 +219,6 @@ public class Compression {
 			i--;
 		}
 		seq = seqTmp;
-		System.out.println("seq = " + seqTmp);
 		
 	}
 	

@@ -122,6 +122,7 @@ public static void nbDiff(File f) throws IOException{
  	  int r;
       while ((r = buffer.read()) != -1) {
           char ch = (char) r;
+
           String tmp = String.valueOf(ch);
 		  if(!list.containsKey(tmp)){
 			  list.put(tmp, 1);
@@ -192,11 +193,9 @@ public static void nbDiff(File f) throws IOException{
 	  bit = new bitFileStreamOut(bos);
   }
   
-  public static String code ="";
   
   public static void toFile(String s) throws IOException{
 	  for(int i = 0 ; i < s.length() ; i++){
-		  code+= s.charAt(i);
 		  if(s.charAt(i)=='1')
 			 bit.write(true);
 		 else

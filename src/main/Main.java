@@ -16,8 +16,8 @@ public class Main {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-			
-		File f = new File("abra.txt");
+	
+		File f = new File(args[0]);
 		Tools.nbDiff(f);
 		
 		
@@ -28,10 +28,11 @@ public class Main {
 			System.out.println(listKey[i] + " , " + Tools.table.get(listKey[i]));
 		}
 		
-		
+		System.out.println("exp-rnd-05.txt");
+		System.out.println("TAILLE DE CODAGE : " + Tools.table.get(Tools.table.keySet().toArray()[0]).length());
 		Tools.init("compressed.txt");
 		Compression c = new Compression();
-		
+		System.out.println("taille avant compression = " + f.length() + "kb");
 		System.out.println("Compression:");
 		System.out.println("============");
 		long start = System.currentTimeMillis();  
@@ -43,7 +44,7 @@ public class Main {
 		
 		File f2 = new File("compressed.txt");
 		
-		System.out.println("taille avant compression = " + f.length() + "kb");
+		
 		System.out.println("taille apres compression = " + f2.length()+ "kb");
 		double x = (double)f.length() -  (double)f2.length();
 		double y = x / (double)f.length();
@@ -58,6 +59,9 @@ public class Main {
 		elapsedTimeMillis = System.currentTimeMillis()-start;
 		elapsedTimeSec = elapsedTimeMillis/1000F;
 		System.out.println("Temp pris pour decompression : " + elapsedTimeSec);
+		
+		
+		System.out.println("c = " + c.getCode());
 	
 	}
 

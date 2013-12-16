@@ -32,6 +32,7 @@ public class Decompression {
 	HashMap<String,Arbre> hash = new HashMap<String,Arbre>();
 	String decomp;
 	bitFileStreamIn bit;
+	String code = "";
 	
 	public Decompression(){
 		table = Tools.table;
@@ -40,9 +41,10 @@ public class Decompression {
 	
 	public void test3(File f) throws IOException{		
 		
-		
 		FileWriter fw = new FileWriter(new File("decompressed.txt"));
 		BufferedWriter bw = new BufferedWriter(fw);
+	try{	
+		
 		
 		bit = new bitFileStreamIn(new FileInputStream(f));
 		int i = 0 ;
@@ -67,6 +69,7 @@ public class Decompression {
 		}
 		racine = Modification(racine,getKey(tmp).charAt(0));
 		bw.write(""+getKey(tmp).charAt(0));
+		code = code + getKey(tmp).charAt(0);
 		
 		char cha ;
 		i = size;
@@ -85,7 +88,7 @@ public class Decompression {
 					String tmp2 = read(size);
 					bw.write(""+getKey(tmp2).charAt(0));
 					cha = getKey(tmp2).charAt(0);
-					i = i + size ;
+					i = i +size;
 				}else{
 					cha = a.getValue();
 					bw.write(""+cha);
@@ -93,11 +96,16 @@ public class Decompression {
 				}
 				racine = Modification(racine,cha);
 				tmp = "";
+				code = code + cha;
 			}else{
 				i++;
 			}
 		}
 		bw.close();
+	}catch(Exception e){
+		bw.close();
+		e.printStackTrace();
+	}
 	}
 
 	
@@ -106,9 +114,10 @@ public class Decompression {
     	String tmp ="";
     	while(i < e){
     		if(bit.read()){
-    			tmp+="1";
+    			tmp=tmp+"1";
+  
     		}else{
-    			tmp+="0";
+    			tmp=tmp+"0";
     		}
     		i++;
     	}
@@ -224,6 +233,8 @@ public class Decompression {
 	
 	
 	private String getKey(String tmp){
+		System.out.println("inside = " + tmp);
+		String inver = new StringBuilder(tmp).reverse().toString();
 		Object[] listKey = table.keySet().toArray();
 		for(int i = 0 ; i < listKey.length ; i++){
 			if(table.get(listKey[i]).equals(tmp)){
@@ -231,6 +242,7 @@ public class Decompression {
 			}
 		}
 		System.out.println("should not arrive here");
+		System.out.println(tmp);
 		return null;
 	}
 	
